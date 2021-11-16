@@ -2,39 +2,9 @@ import React, { useState } from "react";
 import { Basic as Dropzone } from "./Components/DropZone.js";
 import { FiExternalLink } from "react-icons/fi";
 import { VscLoading } from "react-icons/vsc";
+import { FishSpecies } from "./species.js"
 
-const species = [
-  {
-    id: "MaSx",
-    sciName: "Melia azedarach",
-    commonName: "Chinaberry Tree",
-    link: "https://woodsearch.tfri.gov.tw/wood.php?c=2MrFn5pjmw%3D%3D",
-  },
-  {
-    id: "PcSx",
-    sciName: "Pistacia chinensis",
-    commonName: "Chinese Pistache",
-    link: "https://woodsearch.tfri.gov.tw/wood.php?c=2MrFn5tgmQ%3D%3D",
-  },
-  {
-    id: "TgSx",
-    sciName: "Tectona grandis",
-    commonName: "Teak",
-    link: "https://woodsearch.tfri.gov.tw/wood.php?c=2MrFn5tjlQ%3D%3D",
-  },
-  {
-    id: "UpSx",
-    sciName: "Ulmus parvifolia",
-    commonName: "Chinese Elm",
-    link: "https://woodsearch.tfri.gov.tw/wood.php?c=2MrFn5tjnQ%3D%3D",
-  },
-  {
-    id: "ZsSx",
-    sciName: "Zelkova serrata",
-    commonName: "Japanese Elm",
-    link: "https://woodsearch.tfri.gov.tw/wood.php?c=2MrFn5tkmA%3D%3D",
-  },
-];
+const species = FishSpecies()
 
 const App = () => {
   const [image, setImage] = useState(null);
@@ -61,30 +31,27 @@ const App = () => {
       .then((res) => res.json())
       .catch((error) => console.error("Error:", error))
       .then((response) => {
-        console.log("Success:", response.result[0]);
+        console.log("Success:", response);
         setResult(
-          response.result[0]
-            .sort(function (a, b) {
-              return b[1] - a[1];
-            })
-            .slice(0, 3)
+          response
         );
         setLoading(false);
       });
   };
 
+  console.log(result);
+
   return (
     <div className="flex flex-col h-full items-center justify-center bg-blue-500 select-none">
       <div className="flex flex-col items-center bg-white w-96 rounded-lg shadow-xl py-5 px-8">
         <p className="uppercase text-center font-mono text-blue-500 text-3xl font-extrabold">
-          wood classifer
+          Fish detector
         </p>
         <p className="mt-4 text-gray-700 text-justify text-sm">
-          This is an APP that demenstrates how to connect a frontend web page to
-          a backend server through API calls.
+          This is an APP that detects harvested fish in an image using deep learning model, YOLACT.
         </p>
 
-        <div className="mt-4 w-full">
+        <div className="item-center mt-4 w-full">
           {!image && <Dropzone setImage={setImage} />}
           {image && !result && !loading && (
             <>
@@ -101,21 +68,21 @@ const App = () => {
           )}
           {result && !loading && (
             <>
-              <div className="flex gap-4">
-                <div className="w-4/12">
-                  <img className="rounded-md w-full" src={image} />
+              <div className="flex-center">
+                <div className="text-center w-12/12">
+                  <img className="rounded-md w-full" src={`data:image/jpeg;base64,${result.image}`} />
                 </div>
-                <div className="flex flex-col justify-between w-8/12">
-                  {result.map((result, index) => (
+                <div className="flex flex-col mt-4 justify-between w-8/12">
+                  {result["class"].map((cls, index) => (
                     <div className="flex justify-between">
-                      <div className="w-full px-2 text-lg text-blue-500 rounded-md">
-                        {index + 1}{" "}
-                        {species.find((s) => s.id == result[0]).commonName}
+                      <div className="w-full px-2 text-xl text-blue-500 rounded-md">
+                        {index + 1}{". "}
+                        {species.find((s) => s.id == cls).commonName}
                       </div>
                       <a
                         className="text-blue-500 my-auto"
                         target="_new"
-                        href={species.find((s) => s.id == result[0]).link}
+                        href={species.find((s) => s.id == cls).link}
                       >
                         <FiExternalLink />
                       </a>
@@ -146,7 +113,7 @@ const App = () => {
           )}
         </div>
       </div>
-      <span className="mt-2 text-sm text-blue-300">© 2021 Kuan-Ting</span>
+      <span className="mt-2 text-sm text-blue-300">© 2021 Kuan-Ting and Hong-Yang</span>
     </div>
   );
 };

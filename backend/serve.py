@@ -15,6 +15,9 @@ import numpy as np
 from triton import triton_infer
 from detection import Detect, prep_display
 
+from mysql.connector import connect, Error
+from getpass import getpass
+
 img_size = (768, 768)
 means = (123.68, 116.78, 103.94)
 std = (58.40, 57.12, 57.38)
@@ -81,11 +84,27 @@ def single_predict(batch_img, h, w):
     cv2.imwrite('result.jpg', img_numpy)
     img_base64 = img_to_base64(img_numpy)
 
-    result = {'score': scores.tolist(), 'class': classes.tolist(), 'image': img_base64}
+    create_db_query = f"SELECT CommonName, Link FROM FishMetaData WHERE Id={classes.tolist()[0]}"
+    with connection.cursor() as cursor:
+        cursor.execute(create_db_query)
+        sql_result = cursor.fetchall()
+        commonname = sql_result[0][0]
+        link = sql_result[0][1]
+
+    result = {'score': scores.tolist(), 'class': classes.tolist(), 'commonname': [commonname], 'link': [link], 'image': img_base64}
 
     return result
 
 
 if __name__ == '__main__':
     # app.debug = True
+    try:
+        connection = connect(
+            host="10.233.106.105",
+            user=input("Enter username: "),
+            password=getpass("Enter password: "),
+            database="FishSpecies"
+        )
+    except Error as e:
+        print(e)
     app.run(host='localhost')

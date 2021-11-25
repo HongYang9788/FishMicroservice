@@ -21,6 +21,7 @@ def triton_infer(batch_img):
     outputs.append(httpclient.InferRequestedOutput('output_loc'))
     outputs.append(httpclient.InferRequestedOutput('output_priors'))
     outputs.append(httpclient.InferRequestedOutput('output_proto'))
+    
 
 
     ## Send request (Inference)

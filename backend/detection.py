@@ -328,6 +328,8 @@ def prep_display(dets_out, img, h, w, undo_transform=True, class_color=False, ma
     # Then draw the stuff that needs to be done on the cpu
     # Note, make sure this is a uint8 tensor or opencv will not anti alias text for whatever reason
     img_numpy = (img_gpu * 255).byte().cpu().numpy()
+
+    font_ratio = (h*w) / (1000*1000)
     
     for j in reversed(range(num_dets_to_consider)):
         x1, y1, x2, y2 = boxes[j, :]
@@ -340,8 +342,8 @@ def prep_display(dets_out, img, h, w, undo_transform=True, class_color=False, ma
         text_str = '%s: %.2f' % (_class, score)
 
         font_face = cv2.FONT_HERSHEY_DUPLEX
-        font_scale = 0.6
-        font_thickness = 1
+        font_scale = 0.6 * font_ratio
+        font_thickness = int(1 * font_ratio)
 
         text_w, text_h = cv2.getTextSize(text_str, font_face, font_scale, font_thickness)[0]
 

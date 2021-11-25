@@ -72,17 +72,17 @@ const App = () => {
                 <div className="text-center w-12/12">
                   <img className="rounded-md w-full" src={`data:image/jpeg;base64,${result.image}`} />
                 </div>
-                <div className="flex flex-col mt-4 justify-between w-8/12">
+                <div className="flex flex-col mt-4 justify-between w-12/12">
                   {result["class"].map((cls, index) => (
                     <div className="flex justify-between">
                       <div className="w-full px-2 text-xl text-blue-500 rounded-md">
                         {index + 1}{". "}
-                        {species.find((s) => s.id == cls).commonName}
+                        {result["commonname"]}
                       </div>
                       <a
                         className="text-blue-500 my-auto"
                         target="_new"
-                        href={species.find((s) => s.id == cls).link}
+                        href={result["link"]}
                       >
                         <FiExternalLink />
                       </a>
